@@ -26,5 +26,6 @@ public class QueryParameters {
     private String value;
     private String gas;
     private String gasPrice;
+    private String blockType;
     private String apiKey;
 }

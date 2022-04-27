@@ -7,7 +7,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.util.StringUtils;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 
 @Component
 @Log4j2
@@ -70,10 +73,13 @@ public class ClientUtil {
             if (!StringUtils.isEmpty(parameters.getGasPrice())) {
                 uriBuilder.addParameter("gasprice", parameters.getGasPrice());
             }
+            if (!StringUtils.isEmpty(parameters.getBlockType())) {
+                uriBuilder.addParameter("blocktype", parameters.getBlockType());
+            }
             if (!StringUtils.isEmpty(parameters.getApiKey())) {
                 uriBuilder.addParameter("apikey", parameters.getApiKey());
             }
-            return uriBuilder.build().toString();
+            return URLDecoder.decode(uriBuilder.build().toString(), StandardCharsets.UTF_8);
         } catch (URISyntaxException e) {
             log.error("Error building URL, Exception: {}", e.getMessage());
             return null;

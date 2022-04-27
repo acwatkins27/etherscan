@@ -6,8 +6,7 @@
   </head>
   <body>
     <h1>Result</h1>
-    <p th:text="'Message: ' + ${balance.getMessage}"></p>
-    <p th:text="'Result: ' + ${balance.getResult}"></p>
+    <p th:text="'Balance: ' + ${response.get('result')}"></p>
     <a href="/query">Submit another query</a>
   </body>
 </html>

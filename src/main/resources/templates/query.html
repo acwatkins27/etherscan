@@ -3,25 +3,56 @@
 <head>
     <title>Getting Started: Handling Form Submission</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 </head>
 <body>
-<h1>Etherscan Query</h1>
-<form action="#" th:action="@{/query}" th:object="${parameters}" method="post">
-    <p>Module:
-        <select id="module" th:field="*{module}" onchange="dynamicDropDown(this.options[this.selectedIndex].value);">
-            <option selected hidden value="">Select module</option>
-            <option th:value="'account'" th:text="Account"></option>
-            <option th:value="'transaction'" th:text="Transaction"></option>
-        </select>
-    </p>
-    <p>Action:
-        <select id="action" th:field="*{action}"></select>
-    </p>
-    <p>Address: <input type="text" th:field="*{address}" /></p>
-    <p>Api Key: <input type="text" th:field="*{apiKey}" /></p>
-    <p><input type="submit" value="Submit" /> <input type="reset" value="Refresh" onclick="history.go(0)" /></p>
-</form>
+<div class="container">
+    <h1 class="h1">Etherscan Query</h1>
+    <form action="#" th:action="@{/query}" th:object="${parameters}" method="post">
+        <div class="mb-3">
+            <label for="apikey" class="form-label">Api Key</label>
+            <input id="apikey" class="form-control" type="text" th:field="*{apiKey}" />
+        </div>
+        <div class="mb-3">
+            <label for="module" class="form-label">Module</label>
+            <select id="module" th:field="*{module}" class="form-select" onchange="dynamicDropDown(this.options[this.selectedIndex].value);">
+                <option selected hidden value="">Select module</option>
+                <option th:value="'account'" th:text="Account"></option>
+                <option th:value="'transaction'" th:text="Transaction"></option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="action" class="form-label">Action</label>
+            <select id="action" class="form-select" disabled th:field="*{action}" onchange="addParametersFromSelect(this.options[this.selectedIndex].text);">
+                <option value="" hidden selected>Module required</option>
+            </select>
+        </div>
+        <div id="variableParams" class="mb-3">
+            <div id="addressContainer" style="display: none"><label for="addressParam" class="form-label">Address</label><input id="addressParam" class="form-control" type="text" th:field="*{address}" /></div>
+            <div id="contractAddressContainer" style="display: none"><label for="contractAddressParam" class="form-label">Contract Address</label><input id="contractAddressParam" class="form-control" type="text" th:field="*{contractAddress}" /></div>
+            <div id="blockTypeContainer" style="display: none"><label for="blockTypeParam" class="form-label">Block Type</label><input id="blockTypeParam" class="form-control" type="text" th:field="*{blockType}" /></div>
+            <div id="txHashContainer" style="display: none"><label for="txHashParam" class="form-label">Transaction Hash</label><input id="txHashParam" class="form-control" type="text" th:field="*{txHash}" /></div>
+            <div id="tagContainer" style="display: none"><label for="tagParam" class="form-label">Tag</label><input id="tagParam" class="form-control" type="text" th:field="*{tag}" /></div>
+            <div id="startBlockContainer" style="display: none"><label for="startBlockParam" class="form-label">Start Block</label><input id="startBlockParam" class="form-control" type="text" th:field="*{startBlock}" /></div>
+            <div id="endBlockContainer" style="display: none"><label for="endBlockParam" class="form-label">End Block</label><input id="endBlockParam" class="form-control" type="text" th:field="*{endBlock}" /></div>
+            <div id="timestampContainer" style="display: none"><label for="timestampParam" class="form-label">Timestamp</label><input id="timestampParam" class="form-control" type="text" th:field="*{timeStamp}" /></div>
+            <div id="startDateContainer" style="display: none"><label for="startDateParam" class="form-label">Start Date</label><input id="startDateParam" class="form-control" type="date" th:field="*{startDate}" /></div>
+            <div id="endDateContainer" style="display: none"><label for="endDateParam" class="form-label">End Date</label><input id="endDateParam" class="form-control" type="date" th:field="*{endDate}" /></div>
+            <div id="closestContainer" style="display: none"><label for="closestParam" class="form-label">Closest</label><input id="closestParam" class="form-control" type="text" th:field="*{closest}" /></div>
+            <div id="blockNoContainer" style="display: none"><label for="blockNoParam" class="form-label">Block Number</label><input id="blockNoParam" class="form-control" type="text" th:field="*{blockNo}" /></div>
+            <div id="toContainer" style="display: none"><label for="toParam" class="form-label">To</label><input id="toParam" class="form-control" type="text" th:field="*{to}" /></div>
+            <div id="valueContainer" style="display: none"><label for="valueParam" class="form-label">Value</label><input id="valueParam" class="form-control" type="text" th:field="*{value}" /></div>
+            <div id="gasContainer" style="display: none"><label for="gasParam" class="form-label">Gas</label><input id="gasParam" class="form-control" type="text" th:field="*{gas}" /></div>
+            <div id="gasPriceContainer" style="display: none"><label for="gasPriceParam" class="form-label">Gas Price</label><input id="gasPriceParam" class="form-control" type="text" th:field="*{gasPrice}" /></div>
+        </div>
+
+        <input type="submit" value="Submit" class="btn btn-primary"/> <input type="reset" value="Reset" class="btn btn-secondary" onclick="history.go(0)" />
+    </form>
+</div>
+
 </body>
 </html>
 
 <script type="text/javascript" th:src="@{/js/actions.js}"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
