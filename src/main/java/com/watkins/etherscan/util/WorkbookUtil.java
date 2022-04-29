@@ -12,6 +12,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -103,5 +104,11 @@ public class WorkbookUtil {
             }
             listOfResults.add(values);
         });
+    }
+
+    public byte[] getEmptyExcelFileAsBytes(Workbook workbook) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        workbook.write(baos);
+        return baos.toByteArray();
     }
 }

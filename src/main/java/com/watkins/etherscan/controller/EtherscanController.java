@@ -7,6 +7,7 @@ import com.watkins.etherscan.util.WorkbookUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.core.io.FileSystemResource;
@@ -14,9 +15,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 
 @Controller
@@ -35,14 +41,13 @@ public class EtherscanController {
     }
 
     @PostMapping("/query")
-    public String queryResult(@ModelAttribute QueryParameters parameters, Model model) throws Exception {
+    public String queryResult(@ModelAttribute QueryParameters parameters, Model model) {
         JSONObject response = transactionClient.getBalance(parameters);
         model.addAttribute("download", new DownloadJson());
         model.addAttribute("response", response.toString());
         if (response.get("result") instanceof String) {
             return "text_result";
         } else {
-//            WorkbookUtil.writeObjects2ExcelFile(response);
             List<List<String>> listOfResults = new ArrayList<>();
             JSONArray results = response.getJSONArray("result");
             WorkbookUtil.getListOfResults(results, listOfResults);
@@ -55,12 +60,14 @@ public class EtherscanController {
 
     @PostMapping("/query/download")
     @ResponseBody
-    public FileSystemResource downloadFile(@ModelAttribute DownloadJson download) throws IOException {
+    public void downloadFile(@ModelAttribute DownloadJson download, HttpServletResponse response) throws IOException {
         Workbook workbook = workbookUtil.writeObjects2ExcelFile(new JSONObject(download.getBody()));
-        FileOutputStream fileOut = new FileOutputStream("result.xlsx");
-        workbook.write(fileOut);
-        fileOut.close();
-        workbook.close();
-        return new FileSystemResource(new File("result.xlsx"));
+        String headerKey = "Content-Disposition";
+        String headerValue = "attachment; filename = result.xlsx";
+        response.setContentType("application/octet-stream");
+        ServletOutputStream outputStream = response.getOutputStream();
+        response.setHeader(headerKey, headerValue);
+        outputStream.write(workbookUtil.getEmptyExcelFileAsBytes(workbook));
+        outputStream.close();
     }
 }
